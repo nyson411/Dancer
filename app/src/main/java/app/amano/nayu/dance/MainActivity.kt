@@ -15,10 +15,14 @@ import app.amano.nayu.dance.databinding.ViewCircleBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private var pointScene:Int =1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        var maxScene =1
+
         //Dancerの作成
         val dancers = mutableListOf<Dancer>()
         binding.addPeopleButton.setOnClickListener {
@@ -35,12 +39,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
-            val positionList = mutableListOf<Position>(
-                Position(circleView.root.x, circleView.root.y),
-                Position(190f, 100f)
-            )
-
+            val positionList = mutableListOf<Position>()
             dancers.add(Dancer(circleView.root.id, "あ", positionList))
+            for(i in 0..maxScene) {
+                positionList.add(Position(circleView.root.x,circleView.root.y))
+            }
             binding.root.addView(circleView.root)
         }
         // データの追加
@@ -48,53 +51,67 @@ class MainActivity : AppCompatActivity() {
             val id: Int = binding.idText.text.toString().toInt()
             val x: Float = binding.textX.text.toString().toFloat()
             val y: Float = binding.textY.text.toString().toFloat()
-            dancers[id].positionList.add(Position(x, y))
+            dancers[id].positionList[pointScene-1]=Position(x, y)
 
         }
 
         //startMoveToPointAnimを呼び出す
-        var currentScene = 1
+        var currentScene = 0
         binding.playButton.setOnClickListener {
-            var max: Int = 0;
-            dancers.forEach() {
-                if (max < it.positionList.size) {
-                    max = it.positionList.size;
-                }
-            }
+
             dancers.forEach {
-                var eachScene: Int = 0;
-                if (currentScene > it.positionList.size - 1) {
-                    eachScene = it.positionList.size - 1
-                } else {
-                    eachScene = currentScene;
-                }
                 binding.root.getViewById(it.id).startMoveToPointAnim(
-                    it.positionList[eachScene].x, it.positionList[eachScene].y
+                    it.positionList[currentScene].x, it.positionList[currentScene].y
                 )
             }
             currentScene++
-            if (currentScene == max) currentScene = 0
+            if(currentScene==maxScene) currentScene=0;
+            Log.d("あ",currentScene.toString())
 
 
         }
         //RecyclerViewの設定
-        binding.recyclerView.adapter =
-            ListAdapter(this, object : ListAdapter.OnItemClickListener {
-            override fun onItemClickListener(scene: Int) {
-                dancers.forEach {
-                    binding.root.getViewById(it.id).startMoveToPointAnim(
-                        it.positionList[scene].x, it.positionList[scene].y
-                    )
-                }
-            }
-        })
+
+        val adapter = createSceneAdapter(dancers)
+        binding.recyclerView.adapter = adapter
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = LinearLayoutManager.HORIZONTAL
         binding.recyclerView.layoutManager = layoutManager
+        adapter.submitList(maxScene)
+
+
+        //add_scene_buttonのリスナー
+        binding.addSceneButton.setOnClickListener{
+            Log.d("あ","addSceneButton")
+            maxScene++
+            adapter.submitList(maxScene)
+            dancers.forEach{
+                it.positionList.add(it.positionList[maxScene-2])
+            }
+            pointScene=maxScene
+            Log.d("あ",maxScene.toString())
+
+        }
 
 
     }
+    //adapterの作成、リスナーの設定
+    private fun createSceneAdapter(dancers:List<Dancer>):ListAdapter{
+        val sceneAdapter=ListAdapter(this, object : ListAdapter.OnItemClickListener {
+              override fun onItemClickListener(scene: Int) {
+                  pointScene=scene
 
+                 dancers.forEach {
+                      binding.root.getViewById(it.id).startMoveToPointAnim(
+                         it.positionList[scene-1].x, it.positionList[scene-1].y
+                      )
+                 }
+              }
+         }, )
+
+
+        return sceneAdapter
+   }
 
     private fun View.startMoveToPointAnim(transX: Float, transY: Float) {
         Log.d("あ", "startMoveToPointAnim")

@@ -6,12 +6,14 @@
     android:id="@+id/card_view"
     android:layout_width="35dp"
     android:layout_height="35dp"
+    android:layout_margin="8dp"
     android:gravity="center"
     card_view:cardBackgroundColor="#e9e9e9"
     card_view:cardCornerRadius="25dp">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
     <TextView
         android:id="@+id/scene_text"
         android:layout_width="wrap_content"

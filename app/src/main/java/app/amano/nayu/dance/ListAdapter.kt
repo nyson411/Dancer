@@ -1,6 +1,7 @@
 package app.amano.nayu.dance
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ class ListAdapter(
     context: Context,
     private val listener :OnItemClickListener
 ) : RecyclerView.Adapter<FlowerListViewHolder>() {
-    val sceneList = mutableListOf(1);
+    var sceneList = mutableListOf<Int>()
 
     //作成
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): FlowerListViewHolder {
@@ -24,7 +25,8 @@ class ListAdapter(
     override fun onBindViewHolder(holder: FlowerListViewHolder, position: Int) {
         holder.binding.root.setOnClickListener {
             listener.onItemClickListener(
-                scene = position
+                scene = position + 1
+
             )
         }
         holder.binding.sceneText.text=sceneList[position].toString()
@@ -37,6 +39,13 @@ class ListAdapter(
     //リスナーの設定
     interface OnItemClickListener {
         fun onItemClickListener(scene: Int)
+    }
+
+    // 新しいリストを受け取り、sceneList にセットする
+    fun submitList(maxScene:Int) {
+        sceneList.add(maxScene)
+        notifyDataSetChanged()
+        Log.d("あ","ListAdapter.submitList")
     }
 
 }
