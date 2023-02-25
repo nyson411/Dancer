@@ -5,9 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName ="stages")
-data class Stages(
+data class StageEntity(
     @PrimaryKey(autoGenerate = true)
     val uid:Int=0,
-    @ColumnInfo(name="stage_count")
-    val stage_count: Int,
+    @ColumnInfo(name="name")
+    val name:String,
+    @ColumnInfo(name="scene_count")
+    var scene_count: Int,
+
 )

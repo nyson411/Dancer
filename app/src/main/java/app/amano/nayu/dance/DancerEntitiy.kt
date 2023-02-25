@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName ="dancers")
-data class Dancers(
+data class DancerEntity(
     @PrimaryKey(autoGenerate = true)
     val uid:Int=0,
     @ColumnInfo(name="name")
